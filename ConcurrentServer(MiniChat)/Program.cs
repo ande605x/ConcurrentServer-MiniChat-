@@ -10,6 +10,8 @@ namespace ConcurrentServer_MiniChat_
     {
         static void Main(string[] args)
         {
+            Server server = new Server();
+            server.Start();
         }
     }
 }
