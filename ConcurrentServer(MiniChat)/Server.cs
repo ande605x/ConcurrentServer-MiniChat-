@@ -16,25 +16,42 @@ namespace ConcurrentServer_MiniChat_
             TcpListener server = new TcpListener(IPAddress.Loopback, 7070);
             server.Start();
 
-            using (TcpClient socket = server.AcceptTcpClient())
+            while (true)
+            {
+                TcpClient socket = server.AcceptTcpClient();
+                Task.Run(() =>
+                        {
+                            TcpClient localSocket = socket;
+                            DoClient(localSocket);
+                        });
+            }
+            
+
+        }
+
+
+        private void DoClient(TcpClient socket)
+        {
             using (NetworkStream ns = socket.GetStream())
             using (StreamReader sr = new StreamReader(ns))
             using (StreamWriter sw = new StreamWriter(ns))
             {
-                string streamInputLine="";
-                string myLine="";
+                string streamInputLine = "";
+                string myLine = "";
 
-                while ((streamInputLine!="STOP") || (myLine!="STOP"))
+                while ((streamInputLine != "STOP") || (myLine != "STOP"))
                 {
                     streamInputLine = sr.ReadLine();
-                    Console.WriteLine("Server StreamInputLine: "+ streamInputLine);
+                    Console.WriteLine("Server StreamInputLine: " + streamInputLine);
                     Console.WriteLine("Skriv en tekst: ");
                     myLine = Console.ReadLine();
                     sw.WriteLine(myLine);
                     sw.Flush();
                 }
             }
-
         }
+
+
+
     }
 }
